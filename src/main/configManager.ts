@@ -110,13 +110,16 @@ export function generateStarlaunchJson(project: Project): string {
  * Writes both AI-integration files for a brand-new project. Called once,
  * right after a project is created/registered. CLAUDE.md is only written if
  * absent (never clobbers a file the user may have started editing);
- * .starlaunch.json is always written since it is StarLaunch-owned metadata.
+ * .starlaunch.json is StarLaunch-owned metadata and is written unless
+ * `skipStarlaunchJson` is set (used when the folder already belongs to
+ * another registered project, whose file must not be overwritten).
  */
-export function writeInitialAiFiles(project: Project): void {
+export function writeInitialAiFiles(project: Project, options: { skipStarlaunchJson?: boolean } = {}): void {
   try {
     if (!existsSync(claudeMdPath(project.directory))) {
       writeFileSync(claudeMdPath(project.directory), generateClaudeMd(project), 'utf-8')
     }
+    if (options.skipStarlaunchJson) return
     writeFileSync(starlaunchJsonPath(project.directory), generateStarlaunchJson(project), 'utf-8')
   } catch {
     // The project's directory may be unavailable (removable drive, permissions, ...) —
@@ -127,8 +130,8 @@ export function writeInitialAiFiles(project: Project): void {
 /**
  * Keeps an already-existing .starlaunch.json fresh when a project's
  * StarLaunch metadata changes (port, command, category, ...). Silently does
- * nothing if the project never opted in to having the file — StarLaunch
- * never creates it uninvited in a directory it didn't scaffold.
+ * nothing if the project never got the file (it was registered with
+ * "Write AI integration files" turned off).
  */
 export function syncStarlaunchJson(project: Project): void {
   try {

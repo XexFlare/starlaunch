@@ -2,15 +2,8 @@ export type Framework = 'Vite' | 'React' | 'Next' | 'Express' | 'Node' | 'Empty'
 
 export type PackageManager = 'npm' | 'pnpm' | 'yarn' | 'bun'
 
-export type Category =
-  | 'Shipping'
-  | 'Agriculture'
-  | 'Manufacturing'
-  | 'Games'
-  | 'Finance'
-  | 'Personal'
-  | 'Development'
-  | 'Other'
+/** Mirrors the port blocks in the port registry plan (X:\Code\PORT_REGISTRY_PLAN.md). */
+export type Category = 'Apps' | 'Tools' | 'Toys' | 'Customer Support AI Apps' | 'Websites' | 'Other'
 
 export type ProjectStatus = 'stopped' | 'starting' | 'running' | 'building' | 'stopping' | 'error'
 
@@ -28,6 +21,11 @@ export interface Project {
   directory: string
   /** Optional — a project without a pinned port is auto-detected/auto-assigned at launch time. */
   port?: number
+  /**
+   * Optional sub-folder (relative to `directory`, or absolute) whose config holds the port —
+   * for monorepos where the start command runs at the root but vite.config/.env live in a package.
+   */
+  portConfigDirectory?: string
   command: string
   framework: Framework
   packageManager?: PackageManager
@@ -68,6 +66,8 @@ export interface AppSettings {
   autoOpenBrowser: boolean
   rememberRunningApps: boolean
   launchAtStartup: boolean
+  /** Add Project, registry Import and the AI API write CLAUDE.md + .starlaunch.json into the project. */
+  writeAiFilesOnRegister: boolean
   registryEnabled: boolean
   registryPath: string
   aiIntegrationEnabled: boolean
@@ -143,23 +143,39 @@ export const DEFAULT_SETTINGS: AppSettings = {
   autoOpenBrowser: false,
   rememberRunningApps: true,
   launchAtStartup: false,
+  writeAiFilesOnRegister: true,
   registryEnabled: false,
   registryPath: '',
   aiIntegrationEnabled: false,
-  aiIntegrationPort: 4317,
+  aiIntegrationPort: 3003,
   aiIntegrationToken: ''
 }
 
-export const CATEGORIES: Category[] = [
-  'Shipping',
-  'Agriculture',
-  'Manufacturing',
-  'Games',
-  'Finance',
-  'Personal',
-  'Development',
-  'Other'
+export const CATEGORIES: Category[] = ['Apps', 'Tools', 'Toys', 'Customer Support AI Apps', 'Websites', 'Other']
+
+/** Port blocks from the port registry plan; a project's port tells us its category. */
+const CATEGORY_PORT_BLOCKS: { from: number; to: number; category: Category }[] = [
+  { from: 3000, to: 3099, category: 'Apps' },
+  { from: 3200, to: 3299, category: 'Tools' },
+  { from: 3300, to: 3599, category: 'Toys' },
+  { from: 3700, to: 3799, category: 'Customer Support AI Apps' },
+  { from: 5000, to: 5999, category: 'Websites' }
 ]
+
+export function categoryForPort(port?: number): Category {
+  if (port == null) return 'Other'
+  return CATEGORY_PORT_BLOCKS.find((b) => port >= b.from && port <= b.to)?.category ?? 'Other'
+}
+
+/**
+ * Accepts a category name in any casing (e.g. a registry section heading like
+ * "APPS"); anything unrecognised, including the old industry categories,
+ * falls back to the category of the project's port block.
+ */
+export function normalizeCategory(value: string | undefined, port?: number): Category {
+  const match = CATEGORIES.find((c) => c.toLowerCase() === value?.trim().toLowerCase())
+  return match && match !== 'Other' ? match : categoryForPort(port)
+}
 
 export const FRAMEWORKS: Framework[] = ['Vite', 'React', 'Next', 'Express', 'Node', 'Empty', 'Custom']
 

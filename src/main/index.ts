@@ -80,8 +80,39 @@ function regenerateRegistryIfEnabled(): void {
   }
 }
 
+function sharesDirectoryWithAnotherProject(project: Project): boolean {
+  const dir = normalizeDir(project.directory)
+  return store.getProjects().some((p) => p.id !== project.id && normalizeDir(p.directory) === dir)
+}
+
+/** Lets Claude Code (and other assistants) know about StarLaunch as soon as the folder is opened. */
+function writeAiFilesIfEnabled(project: Project): void {
+  if (!store.getSettings().writeAiFilesOnRegister) return
+  writeInitialAiFiles(project, { skipStarlaunchJson: sharesDirectoryWithAnotherProject(project) })
+}
+
+/**
+ * Two registry entries are the same project if they share a folder and either
+ * a name or a port. Different names *and* ports in one folder are separate
+ * parts of one app (e.g. a Web front end and an API started from the same root).
+ */
+function isAlreadyRegistered(entry: { name: string; directory: string; port?: number }): boolean {
+  const dir = normalizeDir(entry.directory)
+  return store
+    .getProjects()
+    .some(
+      (p) =>
+        normalizeDir(p.directory) === dir &&
+        (p.name.trim().toLowerCase() === entry.name.trim().toLowerCase() ||
+          (p.port != null && p.port === entry.port))
+    )
+}
+
 const aiIntegrationLayer = createAiIntegrationLayer({
-  onProjectRegistered: () => regenerateRegistryIfEnabled()
+  onProjectRegistered: (project) => {
+    writeAiFilesIfEnabled(project)
+    regenerateRegistryIfEnabled()
+  }
 })
 aiHttpServer.bind(aiIntegrationLayer)
 
@@ -90,6 +121,7 @@ function registerIpc(): void {
 
   ipcMain.handle(IPC.PROJECT_ADD, (_e, input: Omit<Project, 'id' | 'createdAt' | 'favorite'>) => {
     const project = store.addProject(input)
+    writeAiFilesIfEnabled(project)
     regenerateRegistryIfEnabled()
     return project
   })
@@ -195,25 +227,23 @@ function registerIpc(): void {
 
   ipcMain.handle(IPC.REGISTRY_IMPORT, (_e, path: string): RegistryImportResult => {
     const entries = readRegistry(path)
-    const known = new Set(store.getProjects().map((p) => normalizeDir(p.directory)))
 
     let imported = 0
     let skipped = 0
     for (const entry of entries) {
-      const key = normalizeDir(entry.directory)
-      if (known.has(key)) {
+      if (isAlreadyRegistered(entry)) {
         skipped++
         continue
       }
-      store.addProject({
+      const project = store.addProject({
         name: entry.name,
         directory: entry.directory,
         port: entry.port,
         command: entry.command ?? 'npm run dev',
         framework: entry.framework ?? 'Custom',
-        category: entry.category ?? 'Other'
+        category: entry.category
       })
-      known.add(key)
+      writeAiFilesIfEnabled(project)
       imported++
     }
 

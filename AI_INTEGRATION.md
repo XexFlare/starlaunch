@@ -47,7 +47,7 @@ Off by default. Settings → AI Integration:
 
 1. Toggle **Enable AI Integration API** on. A bearer token is generated automatically the
    first time you enable it.
-2. Note the **port** (default `4317`) and copy the **token**.
+2. Note the **port** (default `3003`) and copy the **token**.
 3. Give the base URL (`http://127.0.0.1:<port>`) and token to the tool you're
    configuring. The token is never written into any project file — it only ever lives in
    StarLaunch's own settings and the Settings modal.
@@ -72,7 +72,7 @@ Compared using a constant-time check. A missing or wrong token gets `401`.
 | `HEALTH_CHECK` | `GET /health` | Unauthenticated. Returns app name, version, project count, and the full capability list. |
 | `PROJECT_LIST` | `GET /projects` | Every registered project + its live runtime stats. |
 | `PROJECT_READ` | `GET /projects/:id` | 404 if the id doesn't exist. |
-| `PROJECT_REGISTER` | `POST /projects` | Body: `{ name, directory, framework?, category?, port?, command? }`. Registers an **existing** directory — mirrors the UI's "Add Project." Never scaffolds files; `directory` must already exist on disk. |
+| `PROJECT_REGISTER` | `POST /projects` | Body: `{ name, directory, framework?, category?, port?, command? }`. Registers an **existing** directory — mirrors the UI's "Add Project." Never scaffolds a project; `directory` must already exist on disk. If *Write AI integration files* is on (the default), it writes `CLAUDE.md` (only if missing) and `.starlaunch.json` into the folder. |
 | `PROJECT_START` | `POST /projects/:id/start` | Resolves the port (project config → pinned port → auto-assign) exactly like the UI's Start button. |
 | `PROJECT_STOP` | `POST /projects/:id/stop` | Graceful `SIGTERM`, escalates to `SIGKILL` after 4s. |
 | `PROJECT_RESTART` | `POST /projects/:id/restart` | Stop then start. |
@@ -90,12 +90,12 @@ simply absent.
 ## 6. Example
 
 ```bash
-curl http://127.0.0.1:4317/health
+curl http://127.0.0.1:3003/health
 
-curl -H "Authorization: Bearer <token>" http://127.0.0.1:4317/projects
+curl -H "Authorization: Bearer <token>" http://127.0.0.1:3003/projects
 
 curl -X POST -H "Authorization: Bearer <token>" \
-  http://127.0.0.1:4317/projects/<id>/start
+  http://127.0.0.1:3003/projects/<id>/start
 ```
 
 ## 7. What every StarLaunch-created project already knows

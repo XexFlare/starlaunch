@@ -20,6 +20,7 @@ export default function ConfigureProjectModal({
   const [name, setName] = useState(project.name)
   const [directory, setDirectory] = useState(project.directory)
   const [port, setPort] = useState<number | undefined>(project.port)
+  const [portConfigDirectory, setPortConfigDirectory] = useState(project.portConfigDirectory ?? '')
   const [command, setCommand] = useState(project.command)
   const [framework, setFramework] = useState<Framework>(project.framework)
   const [packageManager, setPackageManager] = useState<PackageManager | ''>(project.packageManager ?? '')
@@ -37,6 +38,7 @@ export default function ConfigureProjectModal({
       name: name.trim(),
       directory,
       port,
+      portConfigDirectory: portConfigDirectory.trim() || undefined,
       command,
       framework,
       packageManager: packageManager || undefined,
@@ -97,6 +99,14 @@ export default function ConfigureProjectModal({
             <TextInput value={command} onChange={(e) => setCommand(e.target.value)} />
           </Field>
         </div>
+
+        <Field label="Port Config Folder (optional)">
+          <TextInput
+            value={portConfigDirectory}
+            onChange={(e) => setPortConfigDirectory(e.target.value)}
+            placeholder="e.g. apps/web (for monorepos; workspaces are detected automatically)"
+          />
+        </Field>
 
         <div className="grid grid-cols-3 gap-3">
           <Field label="Framework">

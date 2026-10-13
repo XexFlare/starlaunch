@@ -65,7 +65,7 @@ export default function ProjectList(): JSX.Element {
               >
                 {isExpanded ? (
                   <>
-                    <ProjectRow project={project} onConfigure={setConfiguring} />
+                    <ProjectRow project={project} onConfigure={setConfiguring} onCollapse={() => setExpandedId(null)} />
                     <motion.button
                       onClick={() => setExpandedId(null)}
                       animate={{ x: [0, 5, 0] }}

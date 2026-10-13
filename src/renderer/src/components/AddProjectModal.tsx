@@ -1,10 +1,10 @@
 ﻿import { useState } from 'react'
 import { FolderOpen, ScanSearch, Check, Loader2 } from 'lucide-react'
 import type { Category, DetectedProject, Framework } from '@shared/types'
-import { CATEGORIES, FRAMEWORKS } from '@shared/types'
+import { CATEGORIES, FRAMEWORKS, categoryForPort } from '@shared/types'
 import { useAppStore } from '../store/useAppStore'
 import ModalShell from './ModalShell'
-import { Field, TextInput, Select } from './form'
+import { Field, TextInput, Select, Toggle } from './form'
 
 type Tab = 'manual' | 'auto'
 
@@ -13,6 +13,7 @@ export default function AddProjectModal(): JSX.Element {
   const addProject = useAppStore((s) => s.addProject)
   const settings = useAppStore((s) => s.settings)
   const pushToast = useAppStore((s) => s.pushToast)
+  const updateSettings = useAppStore((s) => s.updateSettings)
   const existingProjects = useAppStore((s) => s.projects)
 
   const [tab, setTab] = useState<Tab>('manual')
@@ -23,7 +24,7 @@ export default function AddProjectModal(): JSX.Element {
   const [port, setPort] = useState<number | undefined>(undefined)
   const [command, setCommand] = useState('npm run dev')
   const [framework, setFramework] = useState<Framework>('Vite')
-  const [category, setCategory] = useState<Category>('Personal')
+  const [category, setCategory] = useState<Category>('Apps')
 
   // auto-detect state
   const [scanRoot, setScanRoot] = useState(settings.defaultProjectRoot)
@@ -68,7 +69,7 @@ export default function AddProjectModal(): JSX.Element {
       port: d.port,
       command: d.command,
       framework: d.framework,
-      category: 'Other'
+      category: categoryForPort(d.port)
     })
     setImportedDirs((prev) => new Set(prev).add(d.directory))
   }
@@ -229,6 +230,15 @@ export default function AddProjectModal(): JSX.Element {
           </div>
         </div>
       )}
+
+      <div className="mt-3 border-t border-white/[0.06] pt-1">
+        <Toggle
+          label="Write AI integration files"
+          description="Adds CLAUDE.md (if missing) and .starlaunch.json so AI assistants know StarLaunch runs this project"
+          checked={settings.writeAiFilesOnRegister}
+          onChange={(v) => updateSettings({ writeAiFilesOnRegister: v })}
+        />
+      </div>
     </ModalShell>
   )
 }

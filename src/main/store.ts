@@ -3,7 +3,7 @@ import { join } from 'path'
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'fs'
 import { randomUUID } from 'crypto'
 import type { AppSettings, Project, StoreShape } from '../shared/types'
-import { DEFAULT_SETTINGS } from '../shared/types'
+import { DEFAULT_SETTINGS, normalizeCategory } from '../shared/types'
 
 const STORE_FILE = () => join(app.getPath('userData'), 'StarLaunch-store.json')
 
@@ -35,7 +35,8 @@ function readStore(): StoreShape {
       const raw = readFileSync(file, 'utf-8')
       const parsed = JSON.parse(raw) as Partial<StoreShape>
       data = {
-        projects: parsed.projects ?? [],
+        // Older stores used industry categories; move them onto the port-block categories.
+        projects: (parsed.projects ?? []).map((p) => ({ ...p, category: normalizeCategory(p.category, p.port) })),
         settings: { ...DEFAULT_SETTINGS, ...(parsed.settings ?? {}) },
         runningIds: parsed.runningIds ?? [],
         migratedLegacyStore: parsed.migratedLegacyStore ?? false

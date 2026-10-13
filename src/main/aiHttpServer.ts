@@ -20,7 +20,7 @@ class AiHttpServer {
   private server: Server | null = null
   private layer: AiIntegrationLayer | null = null
   private token = ''
-  private port = 4317
+  private port = 3003
 
   bind(layer: AiIntegrationLayer): void {
     this.layer = layer

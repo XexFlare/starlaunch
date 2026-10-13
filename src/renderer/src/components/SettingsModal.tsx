@@ -134,6 +134,12 @@ export default function SettingsModal(): JSX.Element {
             onChange={(v) => updateSettings({ rememberRunningApps: v })}
           />
           <Toggle
+            label="Write AI integration files"
+            description="Add Project, Import and the AI API write CLAUDE.md (if missing) and .starlaunch.json into the folder"
+            checked={settings.writeAiFilesOnRegister}
+            onChange={(v) => updateSettings({ writeAiFilesOnRegister: v })}
+          />
+          <Toggle
             label="Launch StarLaunch at startup"
             description="Start automatically when you log in"
             checked={settings.launchAtStartup}

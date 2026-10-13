@@ -1,5 +1,7 @@
 # StarLaunch To-Do
 
+**Status 2026-10-13:** all items below are done. See the git log for details. Remaining limitation for item 10: two projects in one folder share that folder's `.starlaunch.json`, so it describes the first one registered.
+
 Collected on 2026-10-13 while setting StarLaunch up on the new computer (code moved from `C:\X\Code` to the `X:` drive). Each item says what's wrong and where to start looking; check the code before changing anything.
 
 ## Do first

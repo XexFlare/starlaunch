@@ -3,6 +3,7 @@ import { app, clipboard, shell } from 'electron'
 import { store } from './store'
 import { processManager } from './processManager'
 import type { Project, ProjectRuntimeStats } from '../shared/types'
+import { normalizeCategory } from '../shared/types'
 import { AI_CAPABILITIES } from '../shared/aiCapabilities'
 import type {
   AiHealthCheckResult,
@@ -66,7 +67,7 @@ export function createAiIntegrationLayer(hooks: AiIntegrationHooks = {}) {
         name: input.name,
         directory: input.directory,
         framework: input.framework ?? 'Custom',
-        category: input.category ?? 'Other',
+        category: normalizeCategory(input.category, input.port),
         port: input.port,
         command: input.command ?? 'npm run dev'
       })

@@ -24,11 +24,8 @@ export default function Header(): JSX.Element {
         </div>
       </div>
 
-      <div
-        className="ml-4 flex flex-1 items-center"
-        style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
-      >
-        <div className="relative w-full max-w-md">
+      <div className="ml-4 flex flex-1 items-center">
+        <div className="relative w-full max-w-md" style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}>
           <Search size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
           <input
             value={searchQuery}

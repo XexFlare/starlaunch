@@ -19,6 +19,8 @@ import { STATUS_META, formatUptime } from '../lib/status'
 interface Props {
   project: Project
   onConfigure: (project: Project) => void
+  /** Called when the card body (not one of its buttons) is clicked. */
+  onCollapse?: () => void
 }
 
 function IconButton({
@@ -45,7 +47,7 @@ function IconButton({
   )
 }
 
-export default function ProjectRow({ project, onConfigure }: Props): JSX.Element {
+export default function ProjectRow({ project, onConfigure, onCollapse }: Props): JSX.Element {
   const stats = useAppStore((s) => s.stats[project.id])
   const startProject = useAppStore((s) => s.startProject)
   const stopProject = useAppStore((s) => s.stopProject)
@@ -76,9 +78,13 @@ export default function ProjectRow({ project, onConfigure }: Props): JSX.Element
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.2 }}
+      onClick={(e) => {
+        if ((e.target as HTMLElement).closest('button, a, input')) return
+        onCollapse?.()
+      }}
       className={`group glass-panel-light flex items-center gap-3 rounded-xl px-3.5 py-2.5 transition-shadow ${
         isRunning ? meta.glow : ''
-      }`}
+      } ${onCollapse ? 'cursor-pointer' : ''}`}
     >
       <button
         title={project.favorite ? 'Unfavorite' : 'Favorite'}

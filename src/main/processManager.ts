@@ -2,10 +2,9 @@ import { spawn, type ChildProcess, execFile } from 'child_process'
 import { createConnection } from 'net'
 import { EventEmitter } from 'events'
 import treeKill from 'tree-kill'
-import pidusage from 'pidusage'
-import pidtree from 'pidtree'
 import type { LogLine, PortSource, Project, ProjectRuntimeStats, ProjectStatus } from '../shared/types'
 import { buildLaunchCommand, resolveLaunchPort } from './portManager'
+import { disposeProcessStats, sampleProcessTrees } from './processStats'
 
 const MAX_LOG_LINES = 3000
 const STATS_INTERVAL_MS = 2500
@@ -262,23 +261,17 @@ class ProcessManager extends EventEmitter {
 
   private async pollStats(): Promise<void> {
     if (this.running.size === 0) return
-    for (const [id, entry] of this.running) {
-      try {
-        const pids: number[] = await pidtree(entry.pid, { root: true }).catch(() => [entry.pid])
-        const stats = await pidusage(pids)
-        let cpu = 0
-        let mem = 0
-        for (const key of Object.keys(stats)) {
-          const s = stats[key]
-          if (!s) continue
-          cpu += s.cpu ?? 0
-          mem += s.memory ?? 0
-        }
-        entry.cpu = Math.round(cpu * 10) / 10
-        entry.memoryMB = Math.round((mem / (1024 * 1024)) * 10) / 10
-      } catch {
-        // process may have just exited; ignore this tick
+    const entries = Array.from(this.running.values())
+    try {
+      const usage = await sampleProcessTrees(entries.map((e) => e.pid))
+      for (const entry of entries) {
+        const u = usage.get(entry.pid)
+        if (!u) continue
+        entry.cpu = Math.round(u.cpu * 10) / 10
+        entry.memoryMB = Math.round((u.memoryBytes / (1024 * 1024)) * 10) / 10
       }
+    } catch {
+      // a slow or failed sample; keep the previous numbers and try again next tick
     }
     this.emit('stats-tick', this.getAllStats())
   }
@@ -287,6 +280,7 @@ class ProcessManager extends EventEmitter {
     for (const [id] of this.running) {
       this.kill(id)
     }
+    disposeProcessStats()
   }
 }
 

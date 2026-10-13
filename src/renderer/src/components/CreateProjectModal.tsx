@@ -31,7 +31,7 @@ export default function CreateProjectModal(): JSX.Element {
   const [parentFolder, setParentFolder] = useState(settings.defaultProjectRoot)
   const [framework, setFramework] = useState<Framework>('React')
   const [packageManager, setPackageManager] = useState<PackageManager>('npm')
-  const [category, setCategory] = useState<Category>('Development')
+  const [category, setCategory] = useState<Category>('Apps')
   const [port, setPort] = useState<number | undefined>(undefined)
   const [command, setCommand] = useState('npm run dev')
   const [commandTouched, setCommandTouched] = useState(false)
