@@ -77,10 +77,6 @@ export default function CollapsedProjectCard({ project, onExpand }: Props): JSX.
         </span>
       </span>
 
-      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/[0.08] text-[9px] font-semibold text-slate-200">
-        {project.framework.slice(0, 2)}
-      </span>
-
       {isRunning && shownPort != null && (
         <button
           title="Open in browser"
@@ -94,6 +90,10 @@ export default function CollapsedProjectCard({ project, onExpand }: Props): JSX.
           <ExternalLink size={13} />
         </button>
       )}
+
+      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/[0.08] text-[9px] font-semibold text-slate-200">
+        {project.framework.slice(0, 2)}
+      </span>
 
       {isRunning || isBusy ? (
         <button
