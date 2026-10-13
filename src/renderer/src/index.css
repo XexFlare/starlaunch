@@ -1,0 +1,119 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-white/10;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    @apply bg-space-950 text-slate-200 antialiased select-none;
+    font-feature-settings: 'ss01' on, 'cv01' on;
+  }
+
+  ::selection {
+    @apply bg-nebula-blue/30 text-white;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply relative bg-white/[0.045] backdrop-blur-2xl border border-white/[0.09] shadow-glow;
+    background-image: linear-gradient(155deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0) 30%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.14),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.03),
+      0 8px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  .glass-panel-solid {
+    @apply relative bg-space-800/60 backdrop-blur-2xl border border-white/[0.09] shadow-glow;
+    background-image: linear-gradient(155deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0) 35%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.03),
+      0 8px 30px rgba(0, 0, 0, 0.55);
+  }
+
+  /* Lightly tinted glass for project cards — the astronomy background should read through clearly. */
+  .glass-panel-light {
+    @apply relative border border-white/[0.06] backdrop-blur-sm shadow-glow;
+    background: linear-gradient(155deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 45%),
+      rgba(9, 11, 22, 0.24);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.07),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.02),
+      0 6px 20px rgba(0, 0, 0, 0.35);
+  }
+
+  /* Keeps text legible over bright/variable astronomy imagery without adding blur. */
+  .text-contrast {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 999px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
+}
+
+@keyframes kenburns-tl {
+  from {
+    transform: scale(1) translate(0, 0);
+  }
+  to {
+    transform: scale(1.02) translate(-1.2%, -1%);
+  }
+}
+@keyframes kenburns-br {
+  from {
+    transform: scale(1) translate(0, 0);
+  }
+  to {
+    transform: scale(1.02) translate(1.2%, 1%);
+  }
+}
+@keyframes kenburns-tr {
+  from {
+    transform: scale(1) translate(0, 0);
+  }
+  to {
+    transform: scale(1.02) translate(1.2%, -1%);
+  }
+}
+@keyframes kenburns-bl {
+  from {
+    transform: scale(1) translate(0, 0);
+  }
+  to {
+    transform: scale(1.02) translate(-1.2%, 1%);
+  }
+}
+
+.bg-kenburns {
+  animation-duration: 292s;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+}
