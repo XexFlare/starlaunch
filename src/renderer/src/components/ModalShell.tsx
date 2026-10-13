@@ -25,7 +25,7 @@ export default function ModalShell({ title, subtitle, onClose, children, width =
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-40 flex items-center justify-center bg-space-950/60 backdrop-blur-sm"
+        className="fixed inset-0 z-40 flex items-center justify-center bg-space-950/60 p-4 backdrop-blur-sm"
         onMouseDown={(e) => {
           if (e.target === e.currentTarget) onClose()
         }}
@@ -35,9 +35,9 @@ export default function ModalShell({ title, subtitle, onClose, children, width =
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.96, y: 8 }}
           transition={{ duration: 0.18, ease: 'easeOut' }}
-          className={`glass-panel-solid relative w-full ${width} rounded-2xl p-5`}
+          className={`glass-panel-solid relative flex max-h-full w-full flex-col ${width} rounded-2xl p-5`}
         >
-          <div className="mb-4 flex items-start justify-between">
+          <div className="mb-4 flex shrink-0 items-start justify-between">
             <div>
               <h2 className="text-[15px] font-semibold text-white">{title}</h2>
               {subtitle && <p className="mt-0.5 text-[12px] text-slate-400">{subtitle}</p>}
@@ -49,7 +49,8 @@ export default function ModalShell({ title, subtitle, onClose, children, width =
               <X size={15} />
             </button>
           </div>
-          {children}
+          {/* Taller-than-window content (e.g. Settings) scrolls here; the title bar stays put. */}
+          <div className="-mx-2 min-h-0 overflow-y-auto px-2 py-0.5 scrollbar-thin">{children}</div>
         </motion.div>
       </motion.div>
     </AnimatePresence>

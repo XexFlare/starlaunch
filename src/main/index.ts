@@ -112,6 +112,7 @@ const aiIntegrationLayer = createAiIntegrationLayer({
   onProjectRegistered: (project) => {
     writeAiFilesIfEnabled(project)
     regenerateRegistryIfEnabled()
+    broadcast(IPC.PROJECT_REGISTERED_EVENT, project)
   }
 })
 aiHttpServer.bind(aiIntegrationLayer)

@@ -125,6 +125,13 @@ export const useAppStore = create<AppState>((set, get) => ({
       get().pushToast(message, 'info', title)
     })
 
+    window.StarLaunch.projects.onRegistered((project) => {
+      set((state) =>
+        state.projects.some((p) => p.id === project.id) ? state : { projects: [...state.projects, project] }
+      )
+      get().pushToast(`${project.name} was registered by an AI assistant`, 'success', 'Project added')
+    })
+
     window.StarLaunch.projects.onCreateProgress((sessionId, line) => {
       if (sessionId !== activeCreateSessionId) return
       set((state) => ({ createProgress: [...state.createProgress, line] }))

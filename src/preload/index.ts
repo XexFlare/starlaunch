@@ -24,6 +24,13 @@ const api = {
     toggleFavorite: (id: string): Promise<Project> => ipcRenderer.invoke(IPC.PROJECT_TOGGLE_FAVORITE, id),
     create: (input: ProjectCreationInput): Promise<ProjectCreationResult> =>
       ipcRenderer.invoke(IPC.PROJECT_CREATE, input),
+    onRegistered: (cb: (project: Project) => void) => {
+      const listener = (_e: unknown, project: Project): void => cb(project)
+      ipcRenderer.on(IPC.PROJECT_REGISTERED_EVENT, listener)
+      return (): void => {
+        ipcRenderer.removeListener(IPC.PROJECT_REGISTERED_EVENT, listener)
+      }
+    },
     onCreateProgress: (cb: (sessionId: string, line: string) => void) => {
       const listener = (_e: unknown, sessionId: string, line: string): void => cb(sessionId, line)
       ipcRenderer.on(IPC.PROJECT_CREATE_PROGRESS_EVENT, listener)

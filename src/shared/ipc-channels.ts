@@ -6,6 +6,8 @@ export const IPC = {
   PROJECT_TOGGLE_FAVORITE: 'project:toggle-favorite',
   PROJECT_CREATE: 'project:create',
   PROJECT_CREATE_PROGRESS_EVENT: 'project:create-progress',
+  /** A project was registered from outside the UI (the AI Integration API). */
+  PROJECT_REGISTERED_EVENT: 'project:registered',
 
   PROCESS_START: 'process:start',
   PROCESS_STOP: 'process:stop',
