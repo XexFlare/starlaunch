@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Star, Play, Square, Loader2 } from 'lucide-react'
+import { Star, Play, Square, Loader2, ExternalLink } from 'lucide-react'
 import type { Project } from '@shared/types'
 import { useAppStore } from '../store/useAppStore'
 import { STATUS_META } from '../lib/status'
@@ -19,11 +19,13 @@ export default function CollapsedProjectCard({ project, onExpand }: Props): JSX.
   const startProject = useAppStore((s) => s.startProject)
   const stopProject = useAppStore((s) => s.stopProject)
   const toggleFavorite = useAppStore((s) => s.toggleFavorite)
+  const openInBrowser = useAppStore((s) => s.openInBrowser)
 
   const status = stats?.status ?? 'stopped'
   const meta = STATUS_META[status]
   const isRunning = status === 'running'
   const isBusy = status === 'starting' || status === 'stopping' || status === 'building'
+  const shownPort = stats?.port ?? project.port
 
   return (
     <div
@@ -78,6 +80,20 @@ export default function CollapsedProjectCard({ project, onExpand }: Props): JSX.
       <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/[0.08] text-[9px] font-semibold text-slate-200">
         {project.framework.slice(0, 2)}
       </span>
+
+      {isRunning && shownPort != null && (
+        <button
+          title="Open in browser"
+          aria-label={`Open ${project.name} in browser`}
+          onClick={(e) => {
+            e.stopPropagation()
+            openInBrowser(shownPort)
+          }}
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-slate-400 transition hover:bg-white/[0.08] hover:text-white active:scale-90"
+        >
+          <ExternalLink size={13} />
+        </button>
+      )}
 
       {isRunning || isBusy ? (
         <button
